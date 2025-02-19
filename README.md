@@ -14,3 +14,9 @@ npm install express
 ```
 5. Create index.js (Entry point to our backend)
 
+## To start a React Front end.
+1. Run the following to initialise a React frontend.
+```bash
+npx create-react-app frontend
+```
+2. A directory called as frontend will be created with all the necessary react files.

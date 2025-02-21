@@ -51,7 +51,8 @@ io.on('connection', (socket) => {
       socket.leave(room);
       const __createdAt__ = Date.now();
       allUsers = leaveRoom(username, allUsers);
-      socket.to(room).emit('chatroom_users', allUsers);
+      const chatRoomUsers = allUsers
+      socket.to(room).emit('chatroom_users', { room, chatRoomUsers});
       socket.to(room).emit('receive_message', {
         username: CHAT_BOT,
         message: `${username} has left the chat`,
@@ -76,10 +77,12 @@ io.on('connection', (socket) => {
           __createdAt__: __createdAt__,
         });
       chatRoom = room;
-      allUsers.push({ id: socket.id, username, room });
+      if(!allUsers.some(user => user.username == username && user.room == room)) {
+        allUsers.push({ id: socket.id, username, room });
+      }
       chatRoomUsers = allUsers.filter((user) => user.room === room);
-      socket.to(room).emit('chatroom_users', chatRoomUsers);
-      socket.emit('chatroom_users', chatRoomUsers);
+      socket.to(room).emit('chatroom_users', {room, chatRoomUsers});
+      socket.emit('chatroom_users', {room, chatRoomUsers});
       getLast100Messages(room)
       .then((last100Messages) => {
           socket.emit('last_100_messages', last100Messages);

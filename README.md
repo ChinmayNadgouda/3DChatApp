@@ -13,10 +13,17 @@ npm init -y
 npm install express
 ```
 5. Create index.js (Entry point to our backend)
-
+6. Installing socket.io 
+```bash
+npm install socket.io
+```
 ## To start a React Front end.
 1. Run the following to initialise a React frontend.
 ```bash
 npx create-react-app frontend
 ```
 2. A directory called as frontend will be created with all the necessary react files.
+3. Installing socket.io-client, Three js and Redux dependencies
+```bash
+npm install socket.io-client redux react-redux redux-thunk redux-logger @reduxjs/toolkit three
+```

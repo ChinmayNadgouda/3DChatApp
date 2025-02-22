@@ -10,7 +10,7 @@ const socket = io.connect('http://localhost:4000');
 function App() {
   return (
     <Router>
-      <div className='App  dark:bg-gray-700'>
+      <div className='App'>
         <Routes>
           <Route
             path='/'

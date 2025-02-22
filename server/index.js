@@ -64,6 +64,7 @@ io.on('connection', (socket) => {
 
   socket.on('join_room', (data) => {
       const { username, room } = data; 
+      
       socket.join(room); 
       let __createdAt__ = Date.now();
       socket.to(room).emit('receive_message', {
@@ -92,6 +93,7 @@ io.on('connection', (socket) => {
 
   socket.on('send_message', (data) => {
       const { message, username, room, __createdAt__ } = data;
+      io.in(room).emit('notify', room);
       io.in(room).emit('receive_message', data);
       const message1 = new Message({
           message: message,

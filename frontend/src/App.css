@@ -1,3 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 html * {
   font-family: Arial;
   box-sizing: border-box;
@@ -6,7 +9,7 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background: rgb(187, 190, 224);
+  background: rgb(55, 65 ,81);
 }
 ::-webkit-scrollbar {
   width: 20px;
@@ -39,14 +42,14 @@ body {
   border: none;
 }
 .btn-outline {
+  padding: 5px 5px;
   color: rgb(31, 42, 82);
   border: 1px solid rgb(42, 49, 50);
-  background: rgb(187, 190, 224);
+  background: rgb(55, 65 ,81);
+  text-align: center;
+  height: 40px;
 }
-.btn-primary {
-  background: rgb(41, 73, 84);
-  color: rgb(109, 61, 253);
-}
+
 .btn-secondary {
   background: rgb(39, 0, 111);
   color: #fff;

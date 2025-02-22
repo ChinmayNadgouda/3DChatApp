@@ -1,27 +1,32 @@
 import styles from './styles.module.css';
 import { useState, useEffect, useRef } from 'react';
+import { Tilt } from 'react-tilt';
+import { useSelector } from "react-redux";
 
-const Messages = ({ usern, room, socket }) => {
+const Messages = ({ socket }) => {
   const [messagesRecieved, setMessagesReceived] = useState([]);
 
   const messagesColumnRef = useRef(null); 
+  
+  const { currentRoom, currentUsername } = useSelector((state) => state.room);
 
   useEffect(() => {
     socket.on('receive_message', (data) => {
-      console.log(data);
-      setMessagesReceived((state) => [
-        ...state,
-        {
-          message: data.message,
-          username: data.username,
-          __createdAt__: data.__createdAt__,
-          room: data.room
-        },
-      ]);
+      if(currentRoom == data.room){
+        setMessagesReceived((state) => [
+          ...state,
+          {
+            message: data.message,
+            username: data.username,
+            __createdAt__: data.__createdAt__,
+            room: data.room
+          },
+        ]);
+      }
     });
 
     return () => socket.off('receive_message');
-  }, [socket]);
+  }, [socket, currentRoom]);
 
   useEffect(() => {
     socket.on('last_100_messages', (last100Messages) => {
@@ -45,18 +50,21 @@ const Messages = ({ usern, room, socket }) => {
   }
 
   return (
-    <div className={styles.messagesColumn} ref={messagesColumnRef}>
+    
+    <div className="overflow-auto h-[90vh] pr-0.5 pl-0.5 pt-0.5 pb-0.5 overflow-x-hidden" ref={messagesColumnRef}>
       {messagesRecieved.map((msg, i) => (
-        <div className={`${msg.username === usern ? styles.messageMe : styles.message}`} key={i}>
+        <Tilt>        
+          <div className={`${msg.username === currentUsername ? styles.messageMe : styles.message}`} key={i}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span className={styles.msgMeta}>{msg.username}</span>
-            <span className={styles.msgMeta}>
+            <span className="text-[#9898C9] text-[0.75rem]">{msg.username}</span>
+            <span className="text-[#9898C9] text-[0.75rem]">
               {formatDateFromTimestamp(msg.__createdAt__)}
             </span>
           </div>
-          <p className={styles.msgText}>{msg.message}</p>
+          <p className="text-white">{msg.message}</p>
           <br />
         </div>
+        </Tilt>
       ))}
     </div>
   );

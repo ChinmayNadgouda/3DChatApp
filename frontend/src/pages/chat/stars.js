@@ -4,7 +4,6 @@ import * as THREE from "three";
 const StarBackground = ({socket}) => {
   const mountRef = useRef(null);
   let rotating = 0.0005;
-  console.log(socket)
   useEffect(() => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -21,7 +20,6 @@ const StarBackground = ({socket}) => {
       mountRef.current.appendChild(renderer.domElement);
     }
 
-   
     const starGeometry = new THREE.BufferGeometry();
     const starVertices = [];
 
@@ -52,15 +50,14 @@ const StarBackground = ({socket}) => {
       renderer.render(scene, camera);
     };
     animate();
-    socket.on("notify", (room) => {
-      console.log("Received 'notify' event!");
-      rotating = 0.05; // Rotate stars fast
+
+    socket.on("spin", (room) => {
+      rotating = 0.5; // Rotate stars fast
       setTimeout(() => {
-        rotating= 0.0005; // Rotate stars slightly
+            rotating= 0.0005; // Rotate stars slightly
       }, 5000);
     });
         
-    
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
@@ -70,7 +67,7 @@ const StarBackground = ({socket}) => {
     window.addEventListener("resize", handleResize);
 
     return () => {
-      socket.off("notify");  
+      socket.off("spin");  
       window.removeEventListener("resize", handleResize);
       
       if (mountRef.current && renderer.domElement) {

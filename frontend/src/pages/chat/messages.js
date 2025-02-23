@@ -30,7 +30,6 @@ const Messages = ({ socket }) => {
 
   useEffect(() => {
     socket.on('last_100_messages', (last100Messages) => {
-      console.log('Last 100 messages:', last100Messages);
       const oldMessages = last100Messages.filter( user => user.message !== undefined)
       setMessagesReceived((state) => [...oldMessages]);
     });

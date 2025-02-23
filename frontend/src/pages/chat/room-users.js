@@ -1,4 +1,3 @@
-import styles from './styles.module.css';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -7,11 +6,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { setRoomAsync } from "../../store/roomSlice";
 
 const RoomAndUsers = ({ socket }) => {
-  const [roomUsers, setRoomUsers] = useState([]);
-
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const { currentRoom, currentUsername } = useSelector((state) => state.room);
   
+  const [roomUsers, setRoomUsers] = useState([]);
   const [hasNewMessage, setHasNewMessage] = useState({
     javascript: false,
     mars: false,
@@ -19,7 +19,6 @@ const RoomAndUsers = ({ socket }) => {
     sun: false,
   });
 
-  const navigate = useNavigate();
   const rooms = [
     { id: 'javascript', name: 'Earth'},
     { id: 'mars', name: 'Mars'},
@@ -29,13 +28,11 @@ const RoomAndUsers = ({ socket }) => {
   useEffect(() => {
     socket.on('chatroom_users', (data) => {
       const {room, chatRoomUsers} = data;
-      console.log(32, data)
       if(room === currentRoom){
         const currUsers = chatRoomUsers.filter( user => user.room === currentRoom)
         setRoomUsers(currUsers);
       }
     });
-
     return () => socket.off('chatroom_users');
   }, [socket, currentRoom]);
 
@@ -45,7 +42,6 @@ const RoomAndUsers = ({ socket }) => {
     setRoomUsers(updatedRoomUsers)
     let room = currentRoom
     let username = currentUsername;
-
     socket.emit('leave_room', { username, room, __createdAt__ });
     navigate('/', { replace: true });
   };
@@ -60,10 +56,9 @@ const RoomAndUsers = ({ socket }) => {
       [roomId]: false,
     }));
   }
-  const Indicator = ({ hasNewMessage, isActiveRoom }) => {
+  const Indicator = ({ hasNewMessage }) => {
     const meshRef = useRef();
   
-    // Smooth color transition between red (no message) and green (new message)
     const { color } = useSpring({
       color: hasNewMessage ? "green" : "red",
       config: { tension: 180, friction: 20 },
@@ -87,7 +82,7 @@ const RoomAndUsers = ({ socket }) => {
         if(room !== currentRoom){
             setHasNewMessage((prevState) => ({
           ...prevState,
-          [room]: true, // Update only the relevant room
+          [room]: true, 
         }));
         }
     });
@@ -133,15 +128,14 @@ const RoomAndUsers = ({ socket }) => {
                 width: "80%", 
                 display: "flex", 
                 alignItems: "center", 
-                gap: "10px", // Adds spacing between text and canvas
+                gap: "10px",
               }}
               onClick={() => joinRoom(room.id)}
             >
-              
               <Canvas style={{ width: "50px", height: "50px", display: "inline-block" }}>
                 <ambientLight intensity={1.75} />
                 <directionalLight position={[1, 1, 1]} />
-                <Indicator hasNewMessage={hasNewMessage[room.id]} isActiveRoom={room.id === currentRoom}/>
+                <Indicator hasNewMessage={hasNewMessage[room.id]}/>
               </Canvas>
               {room.name}
             </button>

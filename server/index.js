@@ -76,6 +76,7 @@ io.on('connection', (socket) => {
   socket.on('send_message', (data) => {
       const { message, username, room, __createdAt__ } = data;
       io.in(room).emit('notify', room);
+      socket.in(room).emit('spin', room);
       socket.emit('spin', room);
       io.in(room).emit('receive_message', data);
       saveMessage(message, username, room);

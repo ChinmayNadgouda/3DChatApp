@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   currentRoom: null,
   currentUsername: null,
+  spin: true
 };
 
 const roomSlice = createSlice({
@@ -15,8 +16,8 @@ const roomSlice = createSlice({
     setUsername: (state, action) => {
       state.currentUsername = action.payload;
     },
-    setSocket: (state, action) => {
-      state.socket = action.payload;  
+    setSpin: (state, action) => {
+      state.spin = action.payload;  
     },
     resetRoom: (state) => {
       state.currentRoom = null;
@@ -25,7 +26,7 @@ const roomSlice = createSlice({
   },
 });
 
-export const { setRoom, setUsername, setSocket, resetRoom } = roomSlice.actions;
+export const { setRoom, setUsername, setSpin, resetRoom } = roomSlice.actions;
 export const setRoomAsync = (room) => (dispatch) => {
     return new Promise((resolve) => {
       dispatch(setRoom(room));

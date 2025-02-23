@@ -1,9 +1,20 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { useDispatch } from "react-redux";
+import { setSpin } from "../../store/roomSlice";
 
 const StarBackground = ({socket}) => {
+  const dispatch = useDispatch();
   const mountRef = useRef(null);
+  
   let rotating = 0.0005;
+  let mouseX = 0;
+  let mouseY = 0;
+  document.addEventListener("mousemove", (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
   useEffect(() => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -34,8 +45,13 @@ const StarBackground = ({socket}) => {
       "position",
       new THREE.Float32BufferAttribute(starVertices, 3)
     );
+    const loader = new THREE.TextureLoader();
 
-    const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 1 });
+    const starMaterial = new THREE.PointsMaterial({  
+      map: loader.load("https://raw.githubusercontent.com/Kuntal-Das/textures/main/sp2.png"),
+      transparent: true, 
+      size: 10 
+    });
     const stars = new THREE.Points(starGeometry, starMaterial);
     scene.add(stars);
 
@@ -51,11 +67,43 @@ const StarBackground = ({socket}) => {
     };
     animate();
 
+    const resizeRendererToDisplaySize = (renderer) => {
+      const canvas = renderer.domElement;
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      const needResize = canvas.width !== width || canvas.height !== height;
+      // resize only when necessary
+      if (needResize) {
+        //3rd parameter `false` to change the internal canvas size
+        renderer.setSize(width, height, false);
+      }
+      return needResize;
+    };
+    
+    const render = (time) => {
+      if (resizeRendererToDisplaySize(renderer)) {
+        const canvas = renderer.domElement;
+        // changing the camera aspect to remove the strechy problem
+        camera.aspect = canvas.clientWidth / canvas.clientHeight;
+        camera.updateProjectionMatrix();
+      }
+      stars.position.x = mouseX * 0.01;
+      stars.position.y = mouseY * -0.01;
+    
+       // Re-render the scene
+      renderer.render(scene, camera);
+       // loop
+      requestAnimationFrame(render);
+    };
+    requestAnimationFrame(render);
+
     socket.on("spin", (room) => {
+      dispatch(setSpin(false));
       rotating = 0.5; // Rotate stars fast
       setTimeout(() => {
+            dispatch(setSpin(true));
             rotating= 0.0005; // Rotate stars slightly
-      }, 5000);
+      }, 1000);
     });
         
     const handleResize = () => {

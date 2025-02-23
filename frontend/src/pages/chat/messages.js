@@ -5,28 +5,37 @@ import { useSelector } from "react-redux";
 
 const Messages = ({ socket }) => {
   const [messagesRecieved, setMessagesReceived] = useState([]);
+  const [messageQueue, setMessageQueue] = useState([]); // Buffer messages when spin is false
 
   const messagesColumnRef = useRef(null); 
   
-  const { currentRoom, currentUsername } = useSelector((state) => state.room);
+  const { currentRoom, currentUsername, spin } = useSelector((state) => state.room);
 
   useEffect(() => {
-    socket.on('receive_message', (data) => {
-      if(currentRoom == data.room){
-        setMessagesReceived((state) => [
-          ...state,
-          {
-            message: data.message,
-            username: data.username,
-            __createdAt__: data.__createdAt__,
-            room: data.room
-          },
-        ]);
+    const handleReceiveMessage = (data) => {
+      if (data.room === currentRoom) {
+        if (spin) {
+          setMessagesReceived((prev) => [
+            ...prev,
+            { message: data.message, username: data.username, __createdAt__: data.__createdAt__, room: data.room }
+          ]);
+        } else {
+          setMessageQueue((prev) => [...prev, data]);
+        }
       }
-    });
+    };
 
-    return () => socket.off('receive_message');
-  }, [socket, currentRoom]);
+    socket.on("receive_message", handleReceiveMessage);
+
+    return () => socket.off("receive_message", handleReceiveMessage);
+  }, [socket, currentRoom, spin]);
+
+  useEffect(() => {
+    if (spin && messageQueue.length > 0) {
+      setMessagesReceived((prev) => [...prev, ...messageQueue]);
+      setMessageQueue([]); 
+    }
+  }, [spin, messageQueue]);
 
   useEffect(() => {
     socket.on('last_100_messages', (last100Messages) => {

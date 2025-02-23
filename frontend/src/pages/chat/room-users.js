@@ -91,7 +91,7 @@ const RoomAndUsers = ({ socket }) => {
   return (
     <div className="border-r-[1px] border-r-white">
       <div className="rounded-lg rounded-e-none bg-[#5A658D] mt-2 drop-shadow-xl">
-        <h2 className="mb-[60px] uppercase text-[2rem] text-[##7dd3fc] pl-2" style={{textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)'}}>{currentRoom}</h2>
+        <h2 className="mb-[60px] uppercase text-[2rem] text-[#ecfeff] pl-2" style={{textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)'}}>{currentRoom}</h2>
       </div>
       <div>
         {roomUsers.length > 0 && <h5 className="text-[1.2rem] text-[#5A658D]" style={{textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)'}}>Active Users:</h5>}

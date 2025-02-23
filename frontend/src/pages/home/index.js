@@ -52,7 +52,7 @@ const Home = ({socket}) => {
           style={{ width: '100%' }}
           onClick={joinRoom}
         >
-          Join Room
+          <span className='block text-center'> Join Room </span>
         </button>
         </div>
       </div>

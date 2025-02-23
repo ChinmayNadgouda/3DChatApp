@@ -34,7 +34,7 @@ const RoomAndUsers = ({ socket }) => {
       }
     });
     return () => socket.off('chatroom_users');
-  }, [socket, currentRoom]);
+  }, [socket]);
 
   const leaveRoom = () => {
     const __createdAt__ = Date.now();
@@ -89,36 +89,39 @@ const RoomAndUsers = ({ socket }) => {
     return () => socket.off("notify");
   }, [socket, currentRoom, hasNewMessage]);
   return (
-    <div className="border-r-[1px] border-r-white">
-      <div className="rounded-lg rounded-e-none bg-[#5A658D] mt-2 drop-shadow-xl">
-        <h2 className="mb-[60px] uppercase text-[2rem] text-[#ecfeff] pl-2" style={{textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)'}}>{currentRoom}</h2>
+    <div className="border-r-[1px] border-r-white overflow-y-hidden h-[95vh] ">
+      <div className="overflow-y-scroll overflow-x-hidden h-[70vh] ">
+        <div className="rounded-lg rounded-e-none bg-[#5A658D] mt-2 drop-shadow-xl">
+          <h2 className="mb-[60px] uppercase text-[2rem] text-[#ecfeff] pl-2" style={{textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)'}}>{currentRoom}</h2>
+        </div>
+        <div className="rounded-lg rounded-e-none bg-[#5A658D] mt-2 drop-shadow-xl">
+          {roomUsers.length > 0 && <h5 className="text-[1.2rem] text-[#ecfeff] pl-2" style={{textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)'}}>Active Users:</h5>}
+          <ul className="list-none mb-[60px] text-[#282B36] pl-2">
+            {roomUsers.map((user) => (
+              <li
+                className="mb-[12px]"
+                style={{
+                  fontWeight: `${user.username === currentUsername ? 'bold' : 'normal'}`,
+                }}
+                key={user.id}
+              >
+                {user.username}
+              </li>
+            ))}
+          </ul>
+          <div className='pl-20 pb-5'>
+            <button className='pl-2 btn btn-outline drop-shadow-md hover:drop-shadow-xl ' onClick={leaveRoom}>
+            <p className='text-[0.82rem] text-[#ecfeff]' style={{textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)'}}>Leave</p>
+            </button>
+          </div>
+        </div>
+        <br />
+        <br />
+        <br />
+        <br />
       </div>
       <div>
-        {roomUsers.length > 0 && <h5 className="text-[1.2rem] text-[#5A658D]" style={{textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)'}}>Active Users:</h5>}
-        <ul className="list-none pl-0 mb-[60px] text-[#ecfeff] ">
-          {roomUsers.map((user) => (
-            <li
-              className="mb-[12px]"
-              style={{
-                fontWeight: `${user.username === currentUsername ? 'bold' : 'normal'}`,
-              }}
-              key={user.id}
-            >
-              {user.username}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <button className='btn btn-outline drop-shadow-md hover:drop-shadow-xl' onClick={leaveRoom}>
-        <p className='text-[0.82rem] text-[#5A658D]' style={{textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)'}}>Leave</p>
-      </button>
-      <br />
-      <br />
-      <br />
-      <br />
-      <div>
-        {rooms.length > 0 && <h5 className=" text-[1.2rem] text-[#5A658D]" style={{textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)'}}>Rooms:</h5>}
+        {rooms.length > 0 && <h5 className=" text-[1.2rem] text-[#ecfeff]" style={{textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)'}}>Rooms:</h5>}
         <ul className="list-none pl-0 mb-[10px] text-[#5A658D]">
           {rooms.map((room) => (
            <li key={room.id} className="flex items-center mb-2 gap-2">
@@ -143,7 +146,7 @@ const RoomAndUsers = ({ socket }) => {
           ))}
         </ul>
       </div>
-    </div>
+      </div>
   );
 };
 

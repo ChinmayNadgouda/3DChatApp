@@ -1,11 +1,14 @@
+require("dotenv").config();
 const express = require('express');
 const http = require('http');
+const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
-require("dotenv").config();
 const leaveRoom = require('./service/leave-room'); 
 const cors = require('cors');
 const { Server } = require('socket.io');
 const { getLast100Messages, saveMessage } = require('./service/mongodb')
+const { JSONRPCServer } = require("json-rpc-2.0");
+const rpcServer = new JSONRPCServer();
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -14,6 +17,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 
 
 const app = express();
+app.use(bodyParser.json());
 app.use(cors()); 
 const server = http.createServer(app);
 // const CHAT_BOT = 'ChatBot';
@@ -25,6 +29,30 @@ const io = new Server(server, {
 });
 
 let allUsers = []; 
+
+rpcServer.addMethod("getLast100Messages", async ({ query }) => {
+  let room = query;
+
+  if (!room) return [];
+
+  try {
+    const last100Messages = await getLast100Messages(room); 
+    return last100Messages; 
+  } catch (err) {
+    console.error("Error fetching messages:", err);
+    return []; 
+  }
+});
+
+app.post("/jsonrpc", async (req, res) => {
+  const jsonRPCRequest = req.body;
+  const response = await rpcServer.receive(jsonRPCRequest);
+  if (response) {
+    res.json(response);
+  } else {
+    res.status(400).json({ error: "Invalid JSON-RPC request" });
+  }
+});
 
 io.on('connection', (socket) => {
   console.log(`User connected ${socket.id}`);
@@ -66,11 +94,8 @@ io.on('connection', (socket) => {
       chatRoomUsers = allUsers.filter((user) => user.room === room);
       socket.to(room).emit('chatroom_users', {room, chatRoomUsers});
       socket.emit('chatroom_users', {room, chatRoomUsers});
-      getLast100Messages(room)
-      .then((last100Messages) => {
-          socket.emit('last_100_messages', last100Messages);
-      })
-      .catch((err) => console.log(err));
+      socket.to(room).emit('chatroom_users', {room, chatRoomUsers});
+      socket.emit('chatroom_users', {room, chatRoomUsers});
   });
 
   socket.on('send_message', (data) => {

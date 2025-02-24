@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.message {
+  background: rgb(40, 43, 54);
+  border-radius: 6px;
+  margin-bottom: 24px;
+  max-width: 500px;
+  padding: 12px;
+  margin-right: 20%;
+  overflow: auto;
+}
+
+.messageMe {
+  background: rgb(90, 101, 141);
+  border-radius: 6px;
+  margin-bottom: 24px;
+  max-width: 500px;
+  margin-left: 36%;
+  padding: 12px;
+  height: auto;
+  display: wrap;
+}

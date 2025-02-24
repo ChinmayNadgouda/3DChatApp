@@ -3,15 +3,15 @@ const express = require('express');
 const http = require('http');
 const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
-const leaveRoom = require('./service/leave-room'); 
+const leaveRoom = require('./services/leave-room'); 
 const cors = require('cors');
 const { Server } = require('socket.io');
-const { getLast100Messages, saveMessage } = require('./service/mongodb')
+const { getLast100Messages, saveMessage } = require('./services/mongodb')
 const { JSONRPCServer } = require("json-rpc-2.0");
 const rpcServer = new JSONRPCServer();
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err));
 
@@ -95,6 +95,9 @@ io.on('connection', (socket) => {
       socket.to(room).emit('chatroom_users', {room, chatRoomUsers});
       socket.emit('chatroom_users', {room, chatRoomUsers});
       socket.to(room).emit('chatroom_users', {room, chatRoomUsers});
+      socket.emit('chatroom_users', {room, chatRoomUsers});
+      socket.emit('chatroom_users', {room, chatRoomUsers});
+      socket.emit('chatroom_users', {room, chatRoomUsers});
       socket.emit('chatroom_users', {room, chatRoomUsers});
   });
 

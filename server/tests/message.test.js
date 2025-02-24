@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const Message = require("../models/Message"); // Import the Message model
-const { getLast100Messages, saveMessage } = require("../service/mongodb"); // Adjust path as needed
+const { getLast100Messages, saveMessage } = require("../services/mongodb"); // Adjust path as needed
 
 let mongoServer;
 

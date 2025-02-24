@@ -103,7 +103,7 @@ const StarBackground = ({socket}) => {
       setTimeout(() => {
             dispatch(setSpin(true));
             rotating= 0.0005; // Rotate stars slightly
-      }, 1000);
+      }, 450);
     });
         
     const handleResize = () => {

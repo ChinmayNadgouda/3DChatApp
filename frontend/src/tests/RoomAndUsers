@@ -1,0 +1,134 @@
+import React from 'react';
+import { MemoryRouter as Router } from "react-router-dom";
+
+import { render, screen, fireEvent, waitFor, act  } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
+import RoomAndUsers from '../pages/chat/room-users'; 
+import { io } from 'socket.io-client';
+
+global.ResizeObserver = require('resize-observer-polyfill')
+
+
+// Mock socket.io
+jest.mock('socket.io-client');
+
+
+const mockStore = configureStore([]);
+
+describe('RoomAndUsers Component', () => {
+ 
+  let store;
+  let socket;
+
+  beforeEach(() => {
+    store = mockStore({
+      room: {
+        currentRoom: 'javascript',
+        currentUsername: 'testUser',
+      },
+    });
+
+    socket = { 
+      on: jest.fn(),
+      off: jest.fn(),
+      emit: jest.fn(),
+    };
+    
+    io.mockReturnValue(socket);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('renders room title and active users', async () => {
+    await act(async () => {
+    render(
+      <Router>
+      <Provider store={store}>
+        <RoomAndUsers socket={socket} />
+      </Provider>
+      </Router>
+    );
+  });
+
+    expect(screen.getByText(/Earth/i)).toBeInTheDocument(); // Check room title
+    expect(screen.getByText(/Active Users:/i)).toBeInTheDocument(); // Check active users header
+  });
+
+  test('joins a room and updates state', async () => {
+    await act(async () => {
+    render(
+      <Router>
+      <Provider store={store}>
+        <RoomAndUsers socket={socket} />
+      </Provider>
+      </Router>
+    );
+  });
+
+    const roomButton = screen.getByText(/Mars/i); // Check for the Mars button
+    fireEvent.click(roomButton); // Simulate clicking the button
+
+    expect(socket.emit).toHaveBeenCalledWith('join_room', { username: 'testUser', room: 'mars' }); // Check socket emit
+  });
+
+  test('leaves a room and updates state', async () => {
+    await act(async () => {
+    render(
+      <Router>
+      <Provider store={store}>
+        <RoomAndUsers socket={socket} />
+      </Provider>
+      </Router>
+    );
+  });
+
+    const leaveButton = screen.getByText(/Leave/i); // Check for the Leave button
+    fireEvent.click(leaveButton); // Simulate clicking the leave button
+
+    expect(socket.emit).toHaveBeenCalledWith('leave_room', { username: 'testUser', room: 'javascript', __createdAt__: expect.any(Number) }); // Check socket emit
+  });
+
+  test('receives chatroom users from socket', async () => {
+    await act(async () => {
+    render(
+      <Router>
+      <Provider store={store}>
+        <RoomAndUsers socket={socket} />
+      </Provider>
+      </Router>
+    );
+  });
+    // Simulate receiving chatroom users
+    const mockData = {
+      room: 'javascript',
+      chatRoomUsers: [{ username: 'testUser', room: 'javascript' }, { username: 'user2', room: 'javascript' }],
+    };
+    socket.on.mock.calls[0][1](mockData); // Call the handler directly with mock data
+
+    await waitFor(() => {
+      expect(screen.getByText(/user2/i)).toBeInTheDocument(); // Check if user2 appears
+    });
+  });
+
+  test('updates hasNewMessage state on notify', async () => {
+    await act(async () => {
+    render(
+      <Router>
+      <Provider store={store}>
+        <RoomAndUsers socket={socket} />
+      </Provider>
+      </Router>
+    );
+  });
+
+    // Simulate receiving a notification
+    socket.on.mock.calls[1][1]('mars'); // Call the notify handler directly
+
+    await waitFor(() => {
+      expect(screen.getByText(/Mars/i)).toHaveStyle('color: green'); // Assuming that the indicator changes color on new messages
+    });
+  });
+});

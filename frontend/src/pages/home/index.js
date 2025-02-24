@@ -41,7 +41,7 @@ const Home = ({socket}) => {
             onChange={(e) => dispatch(setRoom(e.target.value))} 
           >
             <option>-- Select Room --</option>
-            <option value='javascript'>Earth</option>
+            <option value='earth'>Earth</option>
             <option value='mars'>Mars</option>
             <option value='moon'>Moon</option>
             <option value='sun'>Sun</option>

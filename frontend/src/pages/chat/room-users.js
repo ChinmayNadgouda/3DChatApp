@@ -13,14 +13,14 @@ const RoomAndUsers = ({ socket }) => {
   
   const [roomUsers, setRoomUsers] = useState([]);
   const [hasNewMessage, setHasNewMessage] = useState({
-    javascript: false,
+    earth: false,
     mars: false,
     moon: false,
     sun: false,
   });
 
   const rooms = [
-    { id: 'javascript', name: 'Earth'},
+    { id: 'earth', name: 'Earth'},
     { id: 'mars', name: 'Mars'},
     { id: 'moon', name: 'Moon'},
     { id: 'sun', name: 'Sun'}
@@ -34,7 +34,7 @@ const RoomAndUsers = ({ socket }) => {
       }
     });
     return () => socket.off('chatroom_users');
-  }, [socket]);
+  }, [socket, currentRoom]);
 
   const leaveRoom = () => {
     const __createdAt__ = Date.now();
